@@ -12,7 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.alelo.desafiojava.api.dto.EnderecoDTO;
-import com.alelo.desafiojava.api.feignClient.EnderecoFeignClient;
+import com.alelo.desafiojava.api.feignclient.EnderecoFeignClient;
 import com.alelo.desafiojava.service.impl.EnderecoServiceImpl;
 
 @ExtendWith(SpringExtension.class)

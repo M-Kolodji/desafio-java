@@ -5,7 +5,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.alelo.desafiojava.api.dto.EnderecoDTO;
-import com.alelo.desafiojava.api.feignClient.EnderecoFeignClient;
+import com.alelo.desafiojava.api.feignclient.EnderecoFeignClient;
 import com.alelo.desafiojava.service.EnderecoService;
 
 import lombok.RequiredArgsConstructor;

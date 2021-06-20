@@ -1,4 +1,4 @@
-package com.alelo.desafiojava.api.feignClient;
+package com.alelo.desafiojava.api.feignclient;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;

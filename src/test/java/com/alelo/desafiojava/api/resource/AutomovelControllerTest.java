@@ -41,7 +41,6 @@ import com.alelo.desafiojava.api.model.entity.Automovel;
 import com.alelo.desafiojava.exception.EntidadeNaoEncontradaException;
 import com.alelo.desafiojava.exception.NegocioException;
 import com.alelo.desafiojava.service.AutomovelService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ExtendWith(SpringExtension.class)
@@ -118,7 +117,7 @@ class AutomovelControllerTest {
 				.content(json);
 		
 		mvc.perform(request)
-			.andExpect(status().isBadRequest())
+			.andExpect(status().isConflict())
 			.andExpect(jsonPath("erros", hasSize(1)))
 			.andExpect(jsonPath("erros[0]").value(mensagemErro));
 		
