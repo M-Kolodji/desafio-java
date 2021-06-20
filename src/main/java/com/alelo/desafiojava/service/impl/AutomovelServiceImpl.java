@@ -1,7 +1,5 @@
 package com.alelo.desafiojava.service.impl;
 
-import java.util.Optional;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -43,23 +41,21 @@ public class AutomovelServiceImpl implements AutomovelService {
 	}
 
 	@Override
-	public Optional<Automovel> buscaPelaPlaca(String placa) {
-		return repository.findByPlacaContaining(placa);
+	public Automovel buscaPelaPlaca(String placa) {
+		return repository.findByPlacaContaining(placa)
+				.orElseThrow(() -> 
+				new EntidadeNaoEncontradaException(String.format("Automóvel com placa %s não encontrado!", placa)));
 	}
 
 	@Override
 	public void excluiAutomovel(String placa) {
-		Automovel automovel = buscaPelaPlaca(placa)
-				.orElseThrow(() -> 
-					new EntidadeNaoEncontradaException(String.format("Automóvel com placa %s não encontrado!", placa)));
+		Automovel automovel = buscaPelaPlaca(placa);
 		repository.delete(automovel);
 	}
 
 	@Override
 	public Automovel alteraAutomovel(String placa, Automovel automovel) {
-		Automovel automovelEncontrado = buscaPelaPlaca(placa)
-				.orElseThrow(() -> 
-				new EntidadeNaoEncontradaException(String.format("Automóvel com placa %s não encontrado!", placa)));
+		Automovel automovelEncontrado = buscaPelaPlaca(placa);
 		BeanUtils.copyProperties(automovel, automovelEncontrado);
 		return repository.save(automovelEncontrado);
 	}

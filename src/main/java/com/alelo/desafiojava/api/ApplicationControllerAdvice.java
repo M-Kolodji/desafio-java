@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.alelo.desafiojava.api.exception.ApiErrors;
+import com.alelo.desafiojava.exception.EntidadeNaoEncontradaException;
 import com.alelo.desafiojava.exception.NegocioException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
@@ -21,6 +22,12 @@ public class ApplicationControllerAdvice {
 	@ExceptionHandler(NegocioException.class)
 	@ResponseStatus(HttpStatus.CONFLICT)
 	public ApiErrors handleNegocioException(NegocioException ex) {
+		return new ApiErrors(ex.getLocalizedMessage());
+	}
+	
+	@ExceptionHandler(EntidadeNaoEncontradaException.class)
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	public ApiErrors handleEntidadeNaoEncontradaException(EntidadeNaoEncontradaException ex) {
 		return new ApiErrors(ex.getLocalizedMessage());
 	}
 	

@@ -14,7 +14,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
@@ -28,6 +27,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -154,7 +154,7 @@ class AutomovelControllerTest {
 		
 		String placa = automovel.getPlaca();
 		
-		when(service.buscaPelaPlaca(anyString())).thenReturn(Optional.of(automovel));
+		when(service.buscaPelaPlaca(anyString())).thenReturn(automovel);
 		
 		RequestBuilder request = get(AUTOMOVEL_API.concat("/"+ placa )).accept(APPLICATION_JSON);
 		
@@ -170,12 +170,16 @@ class AutomovelControllerTest {
 	@DisplayName("Deve lançar erro ao buscar placa de automóvel inexistente")
 	void buscaAutomovelPorPlacaInexistente() throws Exception {
 		
-		when(service.buscaPelaPlaca(anyString())).thenReturn(Optional.empty());
+		String mensagemErro = "Automóvel com placa BRA2E21 não encontrado!";
+		
+		when(service.buscaPelaPlaca(anyString())).thenThrow(new EntidadeNaoEncontradaException(mensagemErro));
 		
 		RequestBuilder request = get(AUTOMOVEL_API.concat("/BRA2E21" )).accept(APPLICATION_JSON);
 		
 		mvc.perform(request)
-			.andExpect(status().isNotFound());
+		.andExpect(status().isNotFound())
+		.andExpect(jsonPath("erros", hasSize(1)))
+		.andExpect(jsonPath("erros[0]").value(mensagemErro));
 		
 	}
 	
@@ -223,7 +227,7 @@ class AutomovelControllerTest {
 		
 		String json = new ObjectMapper().writeValueAsString(automovelDTO);
 		
-		when(service.buscaPelaPlaca(anyString())).thenReturn(Optional.of(automovel));
+		when(service.buscaPelaPlaca(anyString())).thenReturn(automovel);
 		when(service.alteraAutomovel(anyString(), Mockito.any(Automovel.class))).thenReturn(automovelAlterado);		
 		
 		RequestBuilder request = put(AUTOMOVEL_API.concat("/"+automovelDTO.getPlaca()))
@@ -241,4 +245,33 @@ class AutomovelControllerTest {
 			.andExpect(jsonPath("valorSeguro").value(automovelDTO.getValorSeguro()));
 			
 	}
+	
+	@Test
+	@DisplayName("Deve alterar um automóvel com placa inexistente")
+	void alterarAutomovelComPlacaInexistente() throws Exception {
+		
+		String modelo = "Tracker";
+		TipoCarroceria carroceria = TipoCarroceria.SUV;
+		
+		AutomovelDTO automovelDTO = geraAutomovelDTO();
+		automovelDTO.setModelo(modelo);
+		automovelDTO.setTipoCarroceria(carroceria);
+		
+		String json = new ObjectMapper().writeValueAsString(automovelDTO);
+		
+		String mensagemErro = "Automóvel com placa BRA2E21 não encontrado!";
+		when(service.alteraAutomovel(anyString(), Mockito.any(Automovel.class))).thenThrow(new EntidadeNaoEncontradaException(mensagemErro));
+		
+		RequestBuilder request = put(AUTOMOVEL_API.concat("/BRA2E21"))
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(json);
+		
+		mvc.perform(request)
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("erros", hasSize(1)))
+			.andExpect(jsonPath("erros[0]").value(mensagemErro));
+		
+	}
+	
 }

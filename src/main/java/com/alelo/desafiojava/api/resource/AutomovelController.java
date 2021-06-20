@@ -1,6 +1,5 @@
 package com.alelo.desafiojava.api.resource;
 
-import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 import java.util.List;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.alelo.desafiojava.api.dto.AutomovelDTO;
 import com.alelo.desafiojava.api.model.entity.Automovel;
@@ -69,9 +67,8 @@ public class AutomovelController {
 	@GetMapping("/{placa}")
 	@ApiOperation("Busca um automóvel pela placa")
 	public AutomovelDTO buscaPelaPlaca(@PathVariable String placa) {
-		return service.buscaPelaPlaca(placa)
-				.map(automovel -> mapper.map(automovel, AutomovelDTO.class))
-				.orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
+		Automovel automovel = service.buscaPelaPlaca(placa);
+		return mapper.map(automovel, AutomovelDTO.class);
 	}
 	
 	@DeleteMapping("/{placa}")

@@ -106,19 +106,19 @@ class AutomovelServiceTest {
 	@Test
 	@DisplayName("Deve obter automóvel pela placa informada")
 	void buscaAutomovelPelaPlaca() {
-		Automovel autmovel = geraAutomovel();
+		Automovel automovel = geraAutomovel();
 		
-		when(repository.findByPlacaContaining(anyString())).thenReturn(Optional.of(autmovel));
+		when(repository.findByPlacaContaining(anyString())).thenReturn(Optional.of(automovel));
 		
-		Automovel autmovelEncontrado = service.buscaPelaPlaca(autmovel.getPlaca()).get();
+		Automovel autmovelEncontrado = service.buscaPelaPlaca(automovel.getPlaca());
 		
-		assertThat(autmovelEncontrado.getId()).isEqualTo(autmovel.getId());
-		assertThat(autmovelEncontrado.getPlaca()).isEqualTo(autmovel.getPlaca());
-		assertThat(autmovelEncontrado.getMarca()).isEqualTo(autmovel.getMarca());
-		assertThat(autmovelEncontrado.getModelo()).isEqualTo(autmovel.getModelo());
-		assertThat(autmovelEncontrado.getTipoCarroceria()).isEqualTo(autmovel.getTipoCarroceria());
-		assertThat(autmovelEncontrado.getValorSeguro()).isEqualTo(autmovel.getValorSeguro());
-		assertThat(autmovelEncontrado.getDiaria()).isEqualTo(autmovel.getDiaria());
+		assertThat(autmovelEncontrado.getId()).isEqualTo(automovel.getId());
+		assertThat(autmovelEncontrado.getPlaca()).isEqualTo(automovel.getPlaca());
+		assertThat(autmovelEncontrado.getMarca()).isEqualTo(automovel.getMarca());
+		assertThat(autmovelEncontrado.getModelo()).isEqualTo(automovel.getModelo());
+		assertThat(autmovelEncontrado.getTipoCarroceria()).isEqualTo(automovel.getTipoCarroceria());
+		assertThat(autmovelEncontrado.getValorSeguro()).isEqualTo(automovel.getValorSeguro());
+		assertThat(autmovelEncontrado.getDiaria()).isEqualTo(automovel.getDiaria());
 		
 	}
 	
@@ -126,11 +126,14 @@ class AutomovelServiceTest {
 	@DisplayName("Deve obter vazio ao buscar um automóvel por uma placa inexistente")
 	void buscaAutomovelPorPlacaInexistente() {
 		
+		String placa = "BRA2E21";
 		when(repository.findByPlacaContaining(anyString())).thenReturn(Optional.empty());
 		
-		Optional<Automovel> automovel = service.buscaPelaPlaca("BRA2E21");
+		Throwable exception = Assertions.catchThrowable(() -> service.buscaPelaPlaca(placa));
 		
-		assertThat(automovel).isNotPresent();
+		assertThat(exception)
+		.isInstanceOf(EntidadeNaoEncontradaException.class)
+		.hasMessage(String.format("Automóvel com placa %s não encontrado!", placa));
 		
 	}
 	
@@ -140,7 +143,7 @@ class AutomovelServiceTest {
 		
 		Automovel automovel = geraAutomovel();
 		
-		when(service.buscaPelaPlaca(anyString())).thenReturn(Optional.of(automovel));
+		when(repository.findByPlacaContaining(anyString())).thenReturn(Optional.of(automovel));
 		
 		org.junit.jupiter.api.Assertions.assertDoesNotThrow(() -> service.excluiAutomovel(automovel.getPlaca()));
 		
